@@ -1,0 +1,13 @@
+
+  ##  激活某个配置文件，application-xxx.yml  yml还有---设置文档块   profiles设置文档快名字
+spring:
+  profiles:
+    active: @profile.active@ #此处由maven的环境选择决定
+dubbo:
+  protocol:
+    name : dubbo
+    port : 12345
+  registry :
+    address: zookeeper://127.0.0.1:2181
+  application:
+    name: message-provider
