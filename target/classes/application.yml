@@ -2,4 +2,4 @@
 ##  激活某个配置文件，application-xxx.yml  yml还有---设置文档块   profiles设置文档快名字
 spring:
   profiles:
-    active: @profileActive@
+    active: dev
