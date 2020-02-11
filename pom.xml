@@ -49,12 +49,6 @@
             <version>8.0.11</version>
             <scope>runtime</scope>
         </dependency>
-        <!-- 阿里巴巴数据库数据源 -->
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>druid-spring-boot-starter</artifactId>
-            <version>1.1.10</version>
-        </dependency>
         <!--包蜜豆。mybatisplus已经存在了-->
         <dependency>
             <groupId>com.baomidou</groupId>
