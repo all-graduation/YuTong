@@ -3,9 +3,13 @@ package yutong.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import yutong.entity.YtTarget;
 import yutong.entity.YtUser;
+import yutong.entity.YtUserInfo;
+import yutong.service.YtTargetService;
 import yutong.service.YtUserService;
 import yutong.util.ResponseJson;
 
@@ -24,6 +28,8 @@ public class UserController {
     @Autowired
     YtUserService userService;
 
+    @Autowired
+    YtTargetService ytTargetService;
     /**
      * 登录
      */
@@ -32,7 +38,6 @@ public class UserController {
         YtUser user = userService.getOne(new QueryWrapper<YtUser>()
                 .eq("user_phone", ytUser.getUserPhone())
                 .eq("user_password", ytUser.getUserPassword()));
-        System.out.println(user);
         if(user==null){
             return new ResponseJson(200,"没有用户",null);
         }
@@ -57,20 +62,28 @@ public class UserController {
     public ResponseJson edit(@RequestBody YtUser ytUser){
         userService.update(new UpdateWrapper<YtUser>()
                 .eq("user_id",ytUser.getUserId())
-                .set("user_name",ytUser.getUserName())
-                .set("user_phone",ytUser.getUserPhone()));
+                .set(ytUser.getUserName()!=null&& !ytUser.getUserName().equals(""),"user_name",ytUser.getUserName())
+                .set(ytUser.getUserPassword()!=null&& !ytUser.getUserPassword().equals(""),"user_password",ytUser.getUserPassword())
+                .set(ytUser.getUserPhone()!=null&& !ytUser.getUserPhone().equals(""),"user_phone",ytUser.getUserPhone()));
         return new ResponseJson(200,null,ytUser);
     }
 
     /**
-     * 修改密码
+     * 获取用户信息
      */
-    @PutMapping("editPassword")
-    public ResponseJson editPassword(@RequestBody YtUser ytUser){
-        userService.update(new UpdateWrapper<YtUser>()
-                .eq("user_id",ytUser.getUserId())
-                .set("user_password",ytUser.getUserPassword()));
-        return new ResponseJson(200,null,ytUser);
+    @PostMapping("userInfo")
+    public ResponseJson getUserInfo(@RequestBody YtUser ytUser){
+        YtUser user = userService.getOne(new QueryWrapper<YtUser>()
+                .eq("user_id", ytUser.getUserId()));
+        //因为查出来的user是YTUser类型，其中target是id 所以需要转换成返回类型，并且赋值
+        YtUserInfo ytUserInfo = new YtUserInfo();
+        BeanUtils.copyProperties(user,ytUserInfo);
+        YtTarget target_id = ytTargetService.getOne(new QueryWrapper<YtTarget>().eq("target_id", user.getTarget()));
+        ytUserInfo.setTarget(target_id.getTargetName());
+        if(user==null){
+            return new ResponseJson(200,"没有用户",null);
+        }
+        return new ResponseJson(200,null,ytUserInfo);
     }
 
 }

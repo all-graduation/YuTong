@@ -10,7 +10,7 @@ import java.io.Serializable;
  * </p>
  *
  * @author 于童
- * @since 2020-02-07
+ * @since 2020-02-10
  */
 public class YtUser implements Serializable {
 

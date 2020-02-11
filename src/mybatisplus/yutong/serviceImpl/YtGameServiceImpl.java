@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
  * </p>
  *
  * @author 于童
- * @since 2020-02-07
+ * @since 2020-02-10
  */
 @Service
 public class YtGameServiceImpl extends ServiceImpl<YtGameMapper, YtGame> implements YtGameService {

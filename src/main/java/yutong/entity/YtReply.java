@@ -1,10 +1,9 @@
 package yutong.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-
-import java.io.Serializable;
 import java.util.Date;
+import com.baomidou.mybatisplus.annotation.TableId;
+import java.io.Serializable;
 
 /**
  * <p>
@@ -12,7 +11,7 @@ import java.util.Date;
  * </p>
  *
  * @author 于童
- * @since 2020-02-07
+ * @since 2020-02-10
  */
 public class YtReply implements Serializable {
 

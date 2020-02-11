@@ -12,6 +12,7 @@
         <result column="maker" property="maker" />
         <result column="create_time" property="createTime" />
         <result column="money" property="money" />
+        <result column="desc" property="desc" />
     </resultMap>
 
 </mapper>

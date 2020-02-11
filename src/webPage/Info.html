@@ -1,0 +1,226 @@
+﻿<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <title>game-shop</title>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="css/nprogress.css">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link rel="stylesheet" type="text/css" href="css/font-awesome.min.css">
+    <link rel="apple-touch-icon-precomposed" href="images/icon.png">
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="js/jquery-2.1.4.min.js"></script>
+    <script src="js/nprogress.js"></script>
+    <script src="js/jquery.lazyload.min.js"></script>
+    <!-- axios请求处理JS-->
+    <script src="js/axios.js"></script>
+</head>
+<body class="user-select">
+    <header class="header">
+        <nav class="navbar navbar-default" id="navbar">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#header-navbar" aria-expanded="false"> <span class="sr-only"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button>
+                    <h1 class="logo hvr-bounce-in"><a href="./index.htm" title="游戏商城"><img src="./images/YTlogo.jpg" alt="游戏商城" style="width: 16%;height: 20%"></a></h1>
+                </div>
+                <div class="collapse navbar-collapse" id="header-navbar">
+                    <ul id="info" class="nav navbar-nav navbar-right" style="position: relative;bottom: -20px">
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <section class="container">
+        <div class="content-wrap">
+            <div class="content">
+               <header style="text-align: center; font-size: 25px">个人用户信息</header>
+                <table class="table table-condensed">
+                    <thead>
+                    <tr>
+                        <th>姓名</th>
+                        <th>电话</th>
+                        <th>标签</th>
+                        <th>密码</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody id="userInfoContent">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <aside class="sidebar">
+            <div class="widget widget_hot">
+                <h3>最新游戏</h3>
+                <ul id="ulList">
+                </ul>
+            </div>
+            <div class="widget widget_sentence">
+                <a href="http://www.muzhuangnet.com/show/269.html" target="_blank" rel="nofollow" title="MZ-NetBlog主题">
+                    <img style="width: 100%" src="images/YTLogo.jpg" alt="MZ-NetBlog主题">
+                </a>
+            </div>
+            <div class="widget widget_sentence">
+                <h3>友情链接</h3>
+                <div class="widget-sentence-content">
+                    <a href="http://www.4399.com/" title="Harries BLOG" target="_blank" draggable="false">4399小游戏</a>&nbsp;&nbsp;&nbsp;
+                </div>
+                <div class="widget-sentence-content">
+                    <a href="http://www.4399.com/" title="Harries BLOG" target="_blank" draggable="false">大连东软</a>&nbsp;&nbsp;&nbsp;
+                </div>
+            </div>
+        </aside>
+    </section>
+    <footer class="footer">
+        <div class="container">
+            <p>本站[<a href="">简简单单游戏</a>]的部分内容来源于网络，若侵犯到您的利益，请联系站长删除！谢谢！Powered By [<a href="" target="_blank" rel="nofollow">DTcms</a>] Version 4.0 &nbsp;<a href="" target="_blank" rel="nofollow">快快乐乐</a> &nbsp; <a href="" target="_blank" class="sitemap">网站地图</a></p>
+        </div>
+        <div id="gotop"><a class="gotop"></a></div>
+    </footer>
+
+
+    <!-- 修改用户信息 -->
+    <div class="modal fade" id="myModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- 模态框头部 -->
+                <div class="modal-header">
+                    <h4 class="modal-title">修改用户信息</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <!-- 模态框主体 -->
+                <div class="modal-body">
+                        <div class="form-group">
+                            <label>名称</label>
+                            <input type="text" class="form-control" id="eName" placeholder="请输入名称">
+                        </div>
+                        <div class="form-group">
+                            <label >电话</label>
+                            <input type="text" class="form-control" id="ePhone" placeholder="请输入电话">
+                        </div>
+                        <div class="form-group">
+                            <label>密码</label>
+                            <input type="text" class="form-control" id="ePassword" placeholder="请输入密码">
+                        </div>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="editUser()">修改</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/jquery.ias.js"></script>
+    <script src="js/scripts.js"></script>
+    <!-- axios请求处理JS-->
+    <script src="js/axios.js"></script>
+    <script>
+
+
+        //获取所有游戏列表 按照时间排序，只拿前三条
+        axios({
+            method:"get",
+            url:"http://localhost:8081/game/listTime"
+        }).then(res=>getGameListByTime(res))
+        function getGameListByTime(res) {
+            const json = res.data.data
+            var content = ''
+            for (let i in json) {
+                content +=
+                    '                  <li>\n' +
+                    '                        <a title= ' +json[i].gameName+ '>\n' +
+                    '                            <span class="thumbnail">\n' +
+                    '                                <img class="thumb" data-original= ' + json[i].gameUrl + ' src=' + json[i].gameUrl + '>\n' +
+                    '                            </span><span class="text">' + json[i].gameName + '<br>' +
+                    '                                <i class="glyphicon glyphicon-time"></i>\n' +timeFormat(json[i].createTime)+
+                    '                            </span>\n' +
+                    '                        </a>\n' +
+                    '                    </li>'
+            }
+            document.getElementById('ulList').innerHTML =content
+        }
+
+        //进入页面的时候获取自己的用户信息，从localstory里取id
+            axios({
+            method:"post",
+            url:"http://localhost:8081/user/userInfo",
+            data :{
+                userId : localStorage.getItem("user")
+            }
+        }).then(res=>getUser(res))
+        function getUser(res) {
+            const json = res.data.data
+            document.getElementById('userInfoContent').innerHTML ='' +
+                '            <tr>\n' +
+                '            <td>' + json.userName +'</td>\n' +
+                '            <td id="phone">' + json.userPhone +'</td>\n' +
+                '            <td>' + json.userPassword +'</td>\n' +
+                '            <td>' + json.target +'</td>\n' +
+                '            <td><button type="button" class="btn btn-primary"   data-toggle="modal" data-target="#myModal">修改用户信息</button>' +
+                '            </tr>'
+            document.getElementById("info").innerHTML = '<a style="font-size: 20px" onclick="userInfo()">' +json.userName
+            '</a>'
+        }
+
+        //编辑用户信息
+        function editUser() {
+            const name = document.getElementById('eName').value
+            const phone = document.getElementById('ePhone').value
+            const password = document.getElementById('ePassword').value
+            axios({
+                method:"put",
+                url:"http://localhost:8081/user/edit",
+                data :{
+                    userId : localStorage.getItem("user") ,
+                    userName : name,
+                    userPhone : phone,
+                    userPassword :password
+                }
+            }).then(res=>{
+
+            })
+        }
+
+
+
+        /**
+         * 将"2018-05-19T08:04:52.000+0000"这种格式的时间转化为正常格式，因为java后台穿的时间戳是2018-05-19T08:04:52.000+0000这种格式
+         * @param time
+         */
+        function timeFormat(time) {
+            var d = new Date(time);
+
+            var year = d.getFullYear();       //年
+            var month = d.getMonth() + 1;     //月
+            var day = d.getDate();            //日
+
+            var hh = d.getHours();            //时
+            var mm = d.getMinutes();          //分
+            var ss = d.getSeconds();           //秒
+
+            var clock = year + "/";
+
+            if (month < 10)
+                clock += "0";
+
+            clock += month + "/";
+
+            if (day < 10)
+                clock += "0";
+
+            clock += day + " ";
+
+            if (hh < 10)
+                clock += "0";
+
+            clock += hh + ":";
+            if (mm < 10) clock += '0';
+            clock += mm + ":";
+
+            if (ss < 10) clock += '0';
+            clock += ss;
+            return (clock);
+        }
+    </script>
+</body>
+</html>

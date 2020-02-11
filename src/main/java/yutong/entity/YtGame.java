@@ -1,7 +1,10 @@
 package yutong.entity;
 
-import java.util.Date;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * <p>
@@ -9,7 +12,7 @@ import java.io.Serializable;
  * </p>
  *
  * @author 于童
- * @since 2020-02-07
+ * @since 2020-02-10
  */
 public class YtGame implements Serializable {
 
@@ -18,6 +21,7 @@ public class YtGame implements Serializable {
     /**
      * 游戏id
      */
+    @TableId(value = "game_id", type = IdType.AUTO)
     private Integer gameId;
 
     /**
@@ -50,11 +54,11 @@ public class YtGame implements Serializable {
      */
     private Date createTime;
 
+    private String content;
     /**
      * 价格
      */
     private Double money;
-
 
     public Integer getGameId() {
         return gameId;
@@ -120,17 +124,11 @@ public class YtGame implements Serializable {
         this.money = money;
     }
 
-    @Override
-    public String toString() {
-        return "YtGame{" +
-        "gameId=" + gameId +
-        ", gameName=" + gameName +
-        ", gameUrl=" + gameUrl +
-        ", butCount=" + butCount +
-        ", status=" + status +
-        ", maker=" + maker +
-        ", createTime=" + createTime +
-        ", money=" + money +
-        "}";
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
     }
 }

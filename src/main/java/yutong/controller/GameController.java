@@ -8,6 +8,10 @@ import yutong.entity.YtGame;
 import yutong.service.YtGameService;
 import yutong.util.ResponseJson;
 
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
  * <p>
  *  前端控制器
@@ -31,6 +35,19 @@ public class GameController {
     public ResponseJson list(){
         return new ResponseJson(200,null,ytGameService.list());
     }
+
+    /**
+     * 查询游戏列表 按照时间排序，只拿前三条
+     * @return
+     */
+    @GetMapping("/listTime")
+    public ResponseJson listTIme(){
+        List<YtGame> list = ytGameService.list();
+        list=list.stream().sorted(Comparator.comparing(YtGame::getCreateTime)).limit(3).collect(Collectors.toList());
+        return new ResponseJson(200,null,list);
+    }
+
+
 
     /**
      * 查询一个游戏通过id
