@@ -3,19 +3,9 @@ package yutong.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 
-import java.io.Serializable;
 import java.util.Date;
 
-/**
- * <p>
- * 
- * </p>
- *
- * @author 于童
- * @since 2020-02-10
- */
-public class YtReply implements Serializable {
-
+public class YtReplyVo {
     private static final long serialVersionUID=1L;
 
     /**
@@ -25,9 +15,9 @@ public class YtReply implements Serializable {
     private Integer id;
 
     /**
-     * 发帖人id
+     * 发帖人
      */
-    private Integer userId;
+    private String user;
 
     /**
      * 回复级别0是发帖1 是第一个回复
@@ -35,9 +25,9 @@ public class YtReply implements Serializable {
     private Integer level;
 
     /**
-     * 被回复的人的id
+     * 被回复的人
      */
-    private Integer replyToId;
+    private String replyTo;
 
     /**
      * 创建时间
@@ -54,7 +44,9 @@ public class YtReply implements Serializable {
      */
     private Integer gameId;
 
-    private Integer replyToReplyId;
+    private int replyToReplyId;
+
+    private String target ;
 
 
     public Integer getId() {
@@ -65,12 +57,12 @@ public class YtReply implements Serializable {
         this.id = id;
     }
 
-    public Integer getUserId() {
-        return userId;
+    public String getUser() {
+        return user;
     }
 
-    public void setUserId(Integer userId) {
-        this.userId = userId;
+    public void setUser(String user) {
+        this.user = user;
     }
 
     public Integer getLevel() {
@@ -81,12 +73,12 @@ public class YtReply implements Serializable {
         this.level = level;
     }
 
-    public Integer getReplyToId() {
-        return replyToId;
+    public String getReplyTo() {
+        return replyTo;
     }
 
-    public void setReplyToId(Integer replyToId) {
-        this.replyToId = replyToId;
+    public void setReplyTo(String replyTo) {
+        this.replyTo = replyTo;
     }
 
     public Date getCreateTime() {
@@ -113,11 +105,19 @@ public class YtReply implements Serializable {
         this.gameId = gameId;
     }
 
-    public Integer getReplyToReplyId() {
+    public int getReplyToReplyId() {
         return replyToReplyId;
     }
 
-    public void setReplyToReplyId(Integer replyToReplyId) {
+    public void setReplyToReplyId(int replyToReplyId) {
         this.replyToReplyId = replyToReplyId;
+    }
+
+    public String getTarget() {
+        return target;
+    }
+
+    public void setTarget(String target) {
+        this.target = target;
     }
 }

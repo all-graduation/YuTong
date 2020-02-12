@@ -25,8 +25,6 @@
                 </div>
                 <div class="collapse navbar-collapse" id="header-navbar">
                     <ul id="info" class="nav navbar-nav navbar-right" style="position: relative;bottom: -20px">
-                        <li ><a data-cont="我的订单" title="我的订单" href="index.html">我的订单</a></li>
-                        <li><a data-cont="我的信息" title="我的信息" href="list.html">我的信息</a></li>
                         <li id="signIn"><a data-cont="登录" title="登录" data-toggle="modal" data-target="#myModal">登录</a></li>
                         <li id="signUp"><a data-cont="注册" title="注册" data-toggle="modal" data-target="#register">注册</a></li>
                     </ul>
@@ -61,7 +59,7 @@
                 </ul>
             </div>
             <div class="widget widget_sentence">
-                <a href="http://www.muzhuangnet.com/show/269.html" target="_blank" rel="nofollow" title="MZ-NetBlog主题">
+                <a target="_blank" rel="nofollow" title="MZ-NetBlog主题">
                     <img style="width: 100%" src="images/YTLogo.jp" alt="MZ-NetBlog主题">
                 </a>
             </div>
@@ -104,7 +102,7 @@
                             <label >密码</label>
                             <input type="text" class="form-control" id="user_password" placeholder="请输入密码">
                         </div>
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="signUp()">登录</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="signIn()">登录</button>
                     </form>
                 </div>
             </div>
@@ -135,13 +133,15 @@
                             <input type="text" class="form-control" id="rName" placeholder="姓名">
                         </div>
                         <div class="form-group">
-                            <label >密码</label>
-                            <input type="text" class="form-control" id="rTarget" placeholder="请输入标签">
+                            <label >标签</label>
+                            <select id="selects">
+                                <option value =1>程序员</option>
+                                <option value =2>设计师</option>
+                                <option value=3>工程师</option>
+                                <option value=4>普通人</option>
+                            </select>
                         </div>
-                </div>
-                <!-- 模态框底部 -->
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="signUp()">关闭</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="signUp()">注册</button>
                 </div>
             </div>
         </div>
@@ -169,12 +169,12 @@
                 document.getElementById('lunbotu').innerHTML ='   <div class="carousel-inner" role="listbox" id="carousel-inner-1">\n' +
                     '<div class="item active">\n' +
                     '<img src=' +json[0].image+
-                    ' alt="木庄网络博客源码" class="img-responsive">\n' +
+                    ' alt="广告1" class="img-responsive">\n' +
                     '</a>\n' +
                     '</div>\n' +
                     '<div class="item">\n' +
                     '<img src=' +json[1].image+
-                    ' alt="木庄网络博客源码" class="img-responsive">\n' +
+                    ' alt="广告2" class="img-responsive">\n' +
                     '</a>\n' +
                     '</div>\n' +
                     '</div>\n' +
@@ -195,11 +195,11 @@
             for (let i in json) {
                 content +=
                     '               <article class="excerpt excerpt-1">\n' +
-                    '                    <a class="focus" href="" title=' +json[i].gameName+
+                    '                    <a onclick="toGamePage(' + json[i].gameId + ')" class="focus" title=' +json[i].gameName+
                     '                       ><img class="thumb" data-original=' +json[i].gameUrl+ ' src=' +json[i].gameUrl+ ' draggable="false" style="display: inline;"></a>\n' +
                     '                    <header>\n' +
                     '                        <h2>\n' +
-                    '                            <a href="http://www.muzhuangnet.com/show/711.html" title=' +json[i].gameName+
+                    '                            <a onclick="toGamePage(' + json[i].gameId + ')" title=' +json[i].gameName+
                     '                                target="_blank" draggable="false">' +json[i].gameName+
                     '                               </a>\n' +
                     '                        </h2>\n' +
@@ -224,7 +224,7 @@
             for (let i in json) {
                 content +=
                     '                  <li>\n' +
-                    '                        <a title= ' +json[i].gameName+ '>\n' +
+                    '                        <a onclick="toGamePage(' + json[i].gameId + ')" title= ' +json[i].gameName+ '>\n' +
                     '                            <span class="thumbnail">\n' +
                     '                                <img class="thumb" data-original= ' + json[i].gameUrl + ' src=' + json[i].gameUrl + '>\n' +
                     '                            </span><span class="text">' + json[i].gameName + '<br>' +
@@ -236,8 +236,8 @@
             document.getElementById('ulList').innerHTML =content
         }
 
-        //注册
-        function signUp() {
+        //登录
+        function signIn() {
            const phone = document.getElementById('user_phone').value
            const password = document.getElementById('user_password').value
             axios({
@@ -258,15 +258,62 @@
                    console.log(localStorage.getItem("user"))
                    document.getElementById("signUp").remove()
                    document.getElementById("signIn").remove()
-                   document.getElementById("info").innerHTML = '<a style="font-size: 20px" onclick="userInfo()">' +json.userName
-                       '</a>'
+                   document.getElementById("info").innerHTML = '<a style="font-size: 20px" onclick="userInfo()">' +
+                       json.userName+'</a>'+
+                       '<span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</span>'+
+                       '<a style="font-size: 20px"  onclick="toOrderPage()">' +"我的订单"+'</a>'
                }
             })
         }
 
-        function userInfo() {
-            document.location = "./info.html";
+        //注册
+        function signUp() {
+            const phone = document.getElementById('rPhone').value
+            const password = document.getElementById('rPassword').value
+            const target = document.getElementById('selects').value
+            const name = document.getElementById('rName').value
+            axios({
+                method:"post",
+                url:"http://localhost:8081/user/signUp",
+                data :{
+                    userPhone : phone,
+                    userPassword : password,
+                    type:1,
+                    target:target,
+                    userName:name
+                }
+            }).then(res=>{
+                const json = res.data.data
+                if(json==null){
+                    alert("注册失败")
+                }
+                else {
+                    alert("注册成功")
+                }
+            })
         }
+
+
+        //跳转到game详情页
+        function toGamePage(id) {
+            const url = "./show.html?id="+id;
+            window.open(url)
+        }
+
+        //跳转到订单详情页
+        function toOrderPage() {
+            window.open("./order.html")
+        }
+
+
+
+        //跳转到info页
+        function userInfo() {
+            window.open("./info.html")
+        }
+
+
+
 
 
         /**

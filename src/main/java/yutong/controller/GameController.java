@@ -54,8 +54,8 @@ public class GameController {
      * @return
      */
     @GetMapping("/game")
-    public ResponseJson getById(@RequestBody YtGame ytGame){
-        YtGame ytGame1 = ytGameService.getOne(new QueryWrapper<YtGame>().eq("game_id", ytGame.getGameId()));
+    public ResponseJson getById(@RequestParam int id){
+        YtGame ytGame1 = ytGameService.getOne(new QueryWrapper<YtGame>().eq("game_id", id));
         return new ResponseJson(200,null,ytGame1);
     }
 

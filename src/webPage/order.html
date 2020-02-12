@@ -33,15 +33,15 @@
     <section class="container">
         <div class="content-wrap">
             <div class="content">
-               <header style="text-align: center; font-size: 25px">个人用户信息</header>
+               <header style="text-align: center; font-size: 25px">我的订单</header>
                 <table class="table table-condensed">
                     <thead>
                     <tr>
-                        <th>姓名</th>
-                        <th>电话</th>
-                        <th>标签</th>
-                        <th>密码</th>
-                        <th>操作</th>
+                        <th>订单id</th>
+                        <th>创建时间</th>
+                        <th>价格</th>
+                        <th>游戏名称</th>
+                        <th>状态</th>
                     </tr>
                     </thead>
                     <tbody id="userInfoContent">
@@ -148,24 +148,23 @@
             }
             else {
              axios({
-                 method:"post",
-                 url:"http://localhost:8081/user/userInfo",
-                 data :{
-                     userId : localStorage.getItem("user")
-                 }
+                 method:"get",
+                 url:"http://localhost:8081/order/list?id="+localStorage.getItem("user"),
              }).then(res=>getUser(res))
              function getUser(res) {
                  const json = res.data.data
-                 document.getElementById('userInfoContent').innerHTML ='' +
-                     '            <tr>\n' +
-                     '            <td>' + json.userName +'</td>\n' +
-                     '            <td id="phone">' + json.userPhone +'</td>\n' +
-                     '            <td>' + json.userPassword +'</td>\n' +
-                     '            <td>' + json.target +'</td>\n' +
-                     '            <td><button type="button" class="btn btn-primary"   data-toggle="modal" data-target="#myModal">修改用户信息</button>' +
-                     '            </tr>'
-                 document.getElementById("info").innerHTML = '<a style="font-size: 20px" onclick="userInfo()">' +json.userName
-                 '</a>'
+                 var content = '';
+                 for (let jsonKey in json) {
+                     content += ' ' +
+                         '                     <tr>\n' +
+                         '                        <td>' + json[jsonKey].id + '</td>\n' +
+                         '                        <td>' + timeFormat(json[jsonKey].createTime) + '</td>\n' +
+                         '                        <td>' + json[jsonKey].money + '</td>\n' +
+                         '                        <td>' + json[jsonKey].game + '</td>\n' +
+                         '                        <td>' + json[jsonKey].status + '</td>\n' +
+                         '                    </tr>'
+                 }
+                 document.getElementById('userInfoContent').innerHTML =content
              }
          }
          }
