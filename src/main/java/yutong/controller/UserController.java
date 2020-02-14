@@ -13,6 +13,11 @@ import yutong.service.YtTargetService;
 import yutong.service.YtUserService;
 import yutong.util.ResponseJson;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 /**
  * <p>
  *  前端控制器
@@ -38,6 +43,21 @@ public class UserController {
         YtUser user = userService.getOne(new QueryWrapper<YtUser>()
                 .eq("user_phone", ytUser.getUserPhone())
                 .eq("user_password", ytUser.getUserPassword()));
+        if(user==null){
+            return new ResponseJson(200,"没有用户",null);
+        }
+        return new ResponseJson(200,null,user);
+    }
+
+    /**
+     * 管理员登录
+     */
+    @PostMapping("/admain-login")
+    public ResponseJson admianLogin(@RequestBody YtUser ytUser){
+        YtUser user = userService.getOne(new QueryWrapper<YtUser>()
+                .eq("user_phone", ytUser.getUserPhone())
+                .eq("user_password", ytUser.getUserPassword())
+                .eq("type",1));
         if(user==null){
             return new ResponseJson(200,"没有用户",null);
         }
@@ -85,6 +105,29 @@ public class UserController {
         }
         return new ResponseJson(200,null,ytUserInfo);
     }
+
+    /**
+     * 获取用户信息
+     */
+    @GetMapping("userList")
+    public ResponseJson userList(){
+        List<YtUser> user = userService.list();
+        //因为查出来的user是YTUser类型，其中target是id 所以需要转换成返回类型，并且赋值
+        //获取target
+        List<YtTarget> target_id = ytTargetService.list();
+        Map<Integer, String> collect = target_id.stream().collect(Collectors.toMap(YtTarget::getTargetId, YtTarget::getTargetName));
+        List<YtUserInfo> userInfos = new ArrayList<>();
+
+        user.forEach(item->{
+            YtUserInfo ytUserInfo = new YtUserInfo();
+            BeanUtils.copyProperties(item,ytUserInfo);
+            ytUserInfo.setTarget(collect.get(item.getTarget()));
+            userInfos.add(ytUserInfo);
+        });
+
+        return new ResponseJson(200,null,userInfos);
+    }
+
 
 }
 

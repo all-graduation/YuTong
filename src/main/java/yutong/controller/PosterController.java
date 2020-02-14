@@ -2,6 +2,7 @@ package yutong.controller;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import yutong.entity.YtPoster;
@@ -24,13 +25,13 @@ public class PosterController {
     YtPosterService ytPosterService;
 
     /**
-     * 增加一个广告
+     * 修改一个广告
      * @param ytPoster
      * @return
      */
-    @PostMapping("/poster")
+    @PutMapping("/poster")
     public ResponseJson addPoster(@RequestBody YtPoster ytPoster){
-        boolean save = ytPosterService.save(ytPoster);
+        boolean save = ytPosterService.update(new UpdateWrapper<YtPoster>().eq("id",ytPoster.getId()).set("image",ytPoster.getImage()));
         return new ResponseJson(200,null,save);
     }
 

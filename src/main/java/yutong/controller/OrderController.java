@@ -74,6 +74,40 @@ public class OrderController {
     }
 
     /**
+     * 查询用户的所有订单
+     * @return
+     */
+    @GetMapping("allList")
+    public ResponseJson allList(){
+        List<YtOrder> orders = ytOrderService.list();
+        if(CollectionUtils.isEmpty(orders)){
+            return new ResponseJson(200,null,null);
+        }
+        List<YtOrderVo> ytOrderVos = new ArrayList<>();
+
+        List<YtGame> games = ytGameService.list(new QueryWrapper<YtGame>()
+                .in("game_id", orders.stream().map(YtOrder::getGameId).collect(Collectors.toList())));
+        //拿到游戏名字对id
+        Map<Integer, String> collect = games.stream().collect(Collectors.toMap(YtGame::getGameId, YtGame::getGameName));
+        orders.forEach(item->{
+            YtOrderVo ytOrderVo = new YtOrderVo();
+            BeanUtils.copyProperties(item,ytOrderVo);
+            ytOrderVo.setGame(collect.get(item.getGameId()));
+            if(item.getStatus()==0){
+                ytOrderVo.setStatus("未支付");
+            }
+            if(item.getStatus()==1){
+                ytOrderVo.setStatus("已支付");
+            }else {
+                ytOrderVo.setStatus("已删除");
+            }
+            ytOrderVos.add(ytOrderVo);
+        });
+
+        return new ResponseJson(200,null,ytOrderVos);
+    }
+
+    /**
      * 查询一个订单通过id
      * @param ytOrder
      * @return

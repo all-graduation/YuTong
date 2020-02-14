@@ -65,6 +65,7 @@ public class GameController {
      */
     @PostMapping("/game")
     public ResponseJson game(@RequestBody YtGame ytGame){
+        ytGame.setMaker(1);
         boolean ytGame1 = ytGameService.save(ytGame);
         return new ResponseJson(200,null,ytGame1);
     }
@@ -73,7 +74,7 @@ public class GameController {
      * 下架一个游戏
      * @return
      */
-    @DeleteMapping("/game")
+    @PostMapping("/delete-game")
     public ResponseJson delete(@RequestBody YtGame ytGame){
         boolean ytGame1 = ytGameService.remove(new QueryWrapper<YtGame>().eq("game_id",ytGame.getGameId()));
         return new ResponseJson(200,null,ytGame1);
