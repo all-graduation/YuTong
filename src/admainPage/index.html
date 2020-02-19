@@ -66,6 +66,7 @@
 								<th>用户名称</th>
 								<th>用户电话</th>
 								<th>用户标签</th>
+								<th>操作</th>
 							</tr>
 							</thead>
 							<tbody id="user-content">
@@ -98,6 +99,8 @@
 									<th>价格</th>
 									<th>游戏名称</th>
 									<th>状态</th>
+									<th>确认支付</th>
+									<th>删除</th>
 								</tr>
 								</thead>
 								<tbody id="userInfoContent">
@@ -235,9 +238,21 @@
 								' <td>' + json[jsonKey].userName + '</td>\n' +
 								' <td>' + json[jsonKey].userPhone + '</td>\n' +
 								' <td>' + json[jsonKey].target + '</td>\n' +
+								'<td><button type="button" class="btn btn-primary"  onclick="deleteUser(' + json[jsonKey].userId + ')">删除 </button>' +
 								' </tr>'
 					}
 					document.getElementById("user-content").innerHTML = content
+				})
+			}
+
+			//删除用户
+			function deleteUser(id) {
+				axios({
+					method:"get",
+					url:"http://localhost:8081/user/deleteUser?id="+id,
+				}).then(res=>{
+					alert("操作成功")
+					showUserList()
 				})
 			}
 
@@ -324,10 +339,23 @@
 									'                        <td>' + json[jsonKey].money + '</td>\n' +
 									'                        <td>' + json[jsonKey].game + '</td>\n' +
 									'                        <td>' + json[jsonKey].status + '</td>\n' +
+									'<td><button type="button" class="btn btn-primary"  onclick="changeStatus(' + json[jsonKey].id +','+ 1+ ')">确认订单 </button>' +
+									'<td><button type="button" class="btn btn-primary"  onclick="changeStatus(' + json[jsonKey].id +','+ 2+  ')">删除 </button>' +
 									'                    </tr>'
 						}
 						document.getElementById('userInfoContent').innerHTML =content
 					}
+			}
+
+			//更改订单状态
+			function changeStatus(id,flag) {
+				axios({
+					method:"get",
+					url:"http://localhost:8081/order/edit?id="+id+"&status="+flag,
+				}).then(res=>{
+					alert("操作成功")
+					getInfo()
+				})
 			}
 
 			//获取游戏列表

@@ -153,5 +153,16 @@ public class OrderController {
         ytGameService.updateById(game);
         return new ResponseJson(200,null,user_id);
     }
+    /**
+     * 下订单
+     * @return
+     */
+    @GetMapping("edit")
+    public ResponseJson edit(@RequestParam int id,@RequestParam int status){
+        //先判断是不是已经有订单存在了，如果有的话就不用再买了
+        boolean exitOrder = ytOrderService.update(new UpdateWrapper<YtOrder>().eq("id",id).set("status",status));
+        return new ResponseJson(200,null,exitOrder);
+    }
 }
+
 

@@ -128,6 +128,15 @@ public class UserController {
         return new ResponseJson(200,null,userInfos);
     }
 
+    /**
+     * 获取用户信息
+     */
+    @GetMapping("deleteUser")
+    public ResponseJson deleteUser(@RequestParam int id){
+       userService.remove(new QueryWrapper<YtUser>().eq("user_id",id));
+        return new ResponseJson(200,null,null);
+    }
+
 
 }
 
