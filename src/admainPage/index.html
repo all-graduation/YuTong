@@ -6,7 +6,6 @@
         <title>后台管理</title>
 		<!-- axios请求处理JS-->
 		<script src="assets/js/axios.js"></script>
-        <link rel="shortcut icon" type="image/x-icon" href="assets/img/favicon.png">
         <link rel="stylesheet" href="assets/css/bootstrap.min.css">
         <link rel="stylesheet" href="assets/css/font-awesome.min.css">
         <link rel="stylesheet" href="assets/css/feathericon.min.css">
@@ -205,6 +204,15 @@
         <script src="assets/js/bootstrap.min.js"></script>
 
 		<script>
+
+			//检查是否登录
+			check()
+			function check(){
+				if(localStorage.getItem("userId")==null){
+					window.location.href='./login.html';
+				}
+
+			}
 
 			showUserList()
 			//显示用户列表

@@ -174,7 +174,7 @@
                      content += ' ' +
                          '                     <tr>\n' +
                          '                        <td>' + json[jsonKey].id + '</td>\n' +
-                         '                        <td>' + json[jsonKey].title + '</td>\n' +
+                         '                        <td><a onclick="toPost(' +  json[jsonKey].id+ ')">' + json[jsonKey].title + '</a></td>\n' +
                          '                        <td><time>' + timeFormat(json[jsonKey].cTime) + '</time></td>\n' +
                          '                    </tr>'
                  }
@@ -191,7 +191,7 @@
                         content += ' ' +
                             '                     <tr>\n' +
                             '                        <td>' + json[jsonKey].id + '</td>\n' +
-                            '                        <td>' + json[jsonKey].content + '</td>\n' +
+                            '                        <td><a onclick="toPost(' + json[jsonKey].postId +')">' + json[jsonKey].content + '</a></td>\n' +
                             '                        <td><time>' + timeFormat(json[jsonKey].cTime) + '</time></td>\n' +
                             '                    </tr>'
                     }
@@ -200,6 +200,11 @@
 
          }
          }
+         //跳转到帖子详情
+        function toPost(id) {
+            const url = "./postPage.html?id="+id;
+            window.open(url)
+        }
 
         //编辑用户信息
         function editUser() {
