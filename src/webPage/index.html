@@ -51,6 +51,11 @@
                     </dl>
                     <ul id="replyList">
                     </ul>
+                    <div class="page" style="position: absolute;left: 650px" id="pageTarget">
+<!--                        <a href="">1</a>-->
+<!--                        <a onclick="getPage(2,3)">2</a>-->
+<!--                        <a href="">3</a>-->
+                    </div>
                     <button class="btn btn-default" style="position: relative;left: 720px;background: #a1d5e8;" data-toggle="modal" data-target="#myModal3">发帖 </button>
                 </div>
             </div>
@@ -94,11 +99,11 @@
                     <form role="form"  method="get">
                         <div class="form-group">
                             <label >题目</label>
-                            <input type="text" class="form-control" id="title" placeholder="请输入标题">
+                            <input type="text" class="form-control" id="title" placeholder="请输入标题"autocomplete="off">
                         </div>
                         <div class="form-group">
                             <label >内容</label>
-                            <input type="text" class="form-control" id="bbsContent" placeholder="请输入内容">
+                            <input type="text" class="form-control" id="bbsContent" placeholder="请输入内容" autocomplete="off">
                         </div>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="publish()">发布</button>
                     </form>
@@ -148,15 +153,15 @@
                 <div class="modal-body">
                         <div class="form-group">
                             <label >电话</label>
-                            <input type="text" class="form-control" id="rPhone" placeholder="请输入电话">
+                            <input type="text" class="form-control" id="rPhone" placeholder="请输入电话" autocomplete="off">
                         </div>
                         <div class="form-group">
                             <label >密码</label>
-                            <input type="text" class="form-control" id="rPassword" placeholder="请输入密码">
+                            <input type="text" class="form-control" id="rPassword" placeholder="请输入密码" autocomplete="off">
                         </div>
                         <div class="form-group">
                             <label >姓名</label>
-                            <input type="text" class="form-control" id="rName" placeholder="姓名">
+                            <input type="text" class="form-control" id="rName" placeholder="姓名" autocomplete="off">
                         </div>
                         <div class="form-group">
                             <label >标签</label>
@@ -239,20 +244,40 @@
             document.getElementById('content1').innerHTML =content
         }
 
+
         //获取论坛评论列表
-        axios({
-            method:"get",
-            url:"http://localhost:8081/ytPost/list"
-        }).then(res=>{
-            const json = res.data.data
-            if(json==null)return;
-            var content = ''
-            for (let i in json) {
-                content += '<li style="height: 40px"><a onclick="toPostPage(' +  json[i].id + ')">' + json[i].title + '</a><font>' + timeFormat(json[i].cTime) +
-                    '</font><u></u><i>' + json[i].content + '</i></li>'
-            }
-            document.getElementById('replyList').innerHTML =content
-        })
+        getPage(1,3)
+        function getPage(page,limit){
+            axios({
+                method:"get",
+                url:"http://localhost:8081/ytPost/listPage?page="+page+"&limit="+limit
+            }).then(res=>{
+                const json = res.data.data
+                if(json==null)return;
+                var content = ''
+                for (let i in json) {
+                    content += '<li style="height: 40px"><a onclick="toPostPage(' +  json[i].id + ')">' + json[i].title + '</a><font>' + timeFormat(json[i].cTime) +
+                        '</font><u></u><i><p>' + json[i].content.substring(0,10) + '</p></i></li>'
+                }
+                document.getElementById('replyList').innerHTML =content
+            })
+        }
+
+        getAllPage(3)
+        function getAllPage(limit) {
+            axios({
+                method:"get",
+                url:"http://localhost:8081/ytPost/list?"
+            }).then(res=>{
+                const json = res.data.data.length/limit;
+                let content  = ''
+                for (let i = 1; i < json+1; i++) {
+                    content += '<a onclick="getPage(' + i + ',' + limit + ')">' + i+ '&nbsp&nbsp&nbsp</a>';
+                }
+                document.getElementById('pageTarget').innerHTML =content
+            })
+        }
+
 
         function toPostPage(id){
             const url = "./postPage.html?id="+id;
@@ -305,10 +330,12 @@
                    console.log(localStorage.getItem("user"))
                    document.getElementById("signUp").remove()
                    document.getElementById("signIn").remove()
-                   document.getElementById("info").innerHTML = '<a style="font-size: 20px" onclick="userInfo()">' +
+                   document.getElementById("info").innerHTML = '<div style="position: relative;top: 15px"><a style="font-size: 20px" onclick="userInfo()">' +
                        json.userName+'</a>'+
                        '<span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</span>'+
-                       '<a style="font-size: 20px"  onclick="toOrderPage()">' +"我的订单"+'</a>'
+                       '<a style="font-size: 20px"  onclick="toOrderPage()">' +"我的订单"+'</a>' +
+                       '<span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</span>'+
+                       '<a style="font-size: 20px"  onclick="toPostAndReplyPage()">' +"我的帖子"+'</a></div>'
                }
             })
         }
@@ -376,8 +403,8 @@
         }
 
         //跳转到订单详情页
-        function toOrderPage() {
-            window.open("./order.html")
+        function toPostAndReplyPage() {
+            window.open("./myPostAndReply.html")
         }
 
 
@@ -386,7 +413,6 @@
         function userInfo() {
             window.open("./info.html")
         }
-
 
 
 

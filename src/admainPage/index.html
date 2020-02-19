@@ -33,22 +33,23 @@
                 <div class="sidebar-inner slimscroll">
 					<div id="sidebar-menu" class="sidebar-menu">
 						<ul>
-							<li class="menu-title"> 
+							<li class="menu-title">
 								<span>管理列表</span>
 							</li>
 							<li><a onclick="showUserList()"> 用户管理 </a></li>
 							<li><a onclick="showAdv()"> 广告管理 </a></li>
 							<li><a onclick="gameList()">  游戏管理 </a></li>
 							<li><a onclick="order()">  订单列表 </a></li>
+							<li><a onclick="bbsAdmin()">  帖子管理 </a></li>
 						</ul>
 					</div>
                 </div>
             </div>
 			<!-- /Sidebar -->
-			
+
 			<!-- Page Wrapper -->
             <div class="page-wrapper">
-			
+
                 <div class="content container-fluid">
 
 					<!-- Page Header -->
@@ -122,10 +123,24 @@
 						</table>
 						<button type="button" class="btn btn-primary" style=""  data-toggle="modal" data-target="#myModal1">上架新游戏</button>
 					</div>
+					<!--bbs模块-->
+					<div class="row" id="bbsAdmin" style="display: none">
+						<table class="table table-condensed">
+							<thead>
+								<th>帖子标题</th>
+								<th>帖子内容</th>
+								<th>时间</th>
+								<th>操作</th>
+							</tr>
+							</thead>
+							<tbody id="bbs">
+							</tbody>
+						</table>
+					</div>
 				</div>
 			</div>
 			<!-- /Page Wrapper -->
-		
+
         </div>
 
 		<!-- 发表游戏 -->
@@ -197,6 +212,7 @@
 				document.getElementById("userManage").style.display = "block"
 				document.getElementById("advManage").style.display = "none"
 				document.getElementById("order").style.display = "none"
+				document.getElementById("bbsAdmin").style.display = "none"
 				//获取用户列表
 				axios({
 					method:"get",
@@ -245,6 +261,7 @@
 				document.getElementById("userManage").style.display = "none"
 				document.getElementById("order").style.display = "none"
 				document.getElementById("game").style.display = "none"
+				document.getElementById("bbsAdmin").style.display = "none"
 				showAdvList()
 			}
 
@@ -277,6 +294,7 @@
 				document.getElementById("userManage").style.display = "none"
 				document.getElementById("order").style.display = "block"
 				document.getElementById("game").style.display = "none"
+				document.getElementById("bbsAdmin").style.display = "none"
 				getInfo()
 			}
 
@@ -309,6 +327,7 @@
 				document.getElementById("userManage").style.display = "none"
 				document.getElementById("order").style.display = "none"
 				document.getElementById("game").style.display = "block"
+				document.getElementById("bbsAdmin").style.display = "none"
 				//获取所有游戏列表
 				axios({
 					method:"get",
@@ -330,6 +349,47 @@
 					}
 					document.getElementById("gameInfo").innerHTML = content
 				}
+			}
+
+			//获取帖子
+			function bbsAdmin() {
+				document.getElementById("advManage").style.display = "none"
+				document.getElementById("userManage").style.display = "none"
+				document.getElementById("order").style.display = "none"
+				document.getElementById("game").style.display = "none"
+				document.getElementById("bbsAdmin").style.display = "block"
+				//获取所有游戏列表
+				axios({
+					method:"get",
+					url:"http://localhost:8081/ytPost/list"
+				}).then(res=>getGameList(res))
+				function getGameList(res){
+					const json = res.data.data
+					console.log("asdasds")
+					console.log(json)
+					var content = ''
+					console.log(json)
+					for (let jsonKey in json) {
+						content += '<tr class="active">\n' +
+								' <td>' + json[jsonKey].title + '</td>\n' +
+								' <td><p style="display: block;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;width: 70%">' + json[jsonKey].content.substring(0,10)+"..." + '</p></td>\n' +
+								' <td><time>' + timeFormat(json[jsonKey].cTime) + '</time></td>\n' +
+								'<td><button type="button" class="btn btn-primary"  onclick="deletePost(' + json[jsonKey].id + ')">删除</button>' +
+								' </tr>'
+						' </tr>'
+					}
+					document.getElementById("bbs").innerHTML = content
+				}
+			}
+			//删除帖子
+			function deletePost(id) {
+				axios({
+					method:"post",
+					url:"http://localhost:8081/ytPost/delete?id="+id,
+				}).then(res=>{
+					alert("操作成功")
+					bbsAdmin()
+				})
 			}
 
 			//addGame
@@ -408,6 +468,6 @@
 			}
 
 		</script>
-		
+
     </body>
 </html>

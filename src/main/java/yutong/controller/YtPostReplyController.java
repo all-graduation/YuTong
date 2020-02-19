@@ -60,10 +60,28 @@ public class YtPostReplyController {
 
     }
 
+    /**
+     * 添加回复
+     * @param ytPostReply
+     * @return
+     */
     @PostMapping("/add")
     public ResponseJson add(@RequestBody YtPostReply ytPostReply){
         ytPostReplyService.save(ytPostReply);
         return new ResponseJson(200,null,1);
+    }
+
+    /**
+     * 获取回复某人的帖子的回复list
+     * @param id
+     * @return
+     */
+    @GetMapping("/listReply")
+    public ResponseJson listReply(@RequestParam int id){
+        List<YtPost> ytPosts = ytPostService.list(new QueryWrapper<YtPost>().eq("user_id", id));
+        List<Integer> ids = ytPosts.stream().map(YtPost::getId).collect(Collectors.toList());
+        List<YtPostReply> ytPostReplies = ytPostReplyService.list(new QueryWrapper<YtPostReply>().in("post_id", ids));
+        return new ResponseJson(200,null,ytPostReplies);
     }
 
 }
