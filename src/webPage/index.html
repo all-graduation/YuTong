@@ -8,6 +8,7 @@
     <link rel="stylesheet" type="text/css" href="css/style.css">
     <link rel="stylesheet" type="text/css" href="css/font-awesome.min.css">
     <link rel="apple-touch-icon-precomposed" href="images/icon.png">
+    <link href="css/styleBBS.css" rel="stylesheet" type="text/css" />
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script src="js/jquery-2.1.4.min.js"></script>
     <script src="js/nprogress.js"></script>
@@ -43,13 +44,15 @@
                 </div>
                 <div id="content1"></div>
                 <nav class="pagination" style="display: block;">
-                    <ul>
-                        <li class="prev-page"></li>
-                        <li class="active"><span>1</span></li>
-                        <li><a href="?page=2">2</a></li>
-                        <li class="next-page"><a href="?page=2">下一页</a></li>
-                    </ul>
                 </nav>
+                <div id="tabulation">
+                    <dl>
+                        <dt style="height: 40px"><h1>游戏商城BBS</h1><font>/sifu/</font></dt>
+                    </dl>
+                    <ul id="replyList">
+                    </ul>
+                    <button class="btn btn-default" style="position: relative;left: 720px;background: #a1d5e8;" data-toggle="modal" data-target="#myModal3">发帖 </button>
+                </div>
             </div>
         </div>
         <aside class="sidebar">
@@ -57,11 +60,6 @@
                 <h3>最新游戏</h3>
                 <ul id="ulList">
                 </ul>
-            </div>
-            <div class="widget widget_sentence">
-                <a target="_blank" rel="nofollow" title="MZ-NetBlog主题">
-                    <img style="width: 100%" src="images/YTLogo.jp" alt="MZ-NetBlog主题">
-                </a>
             </div>
             <div class="widget widget_sentence">
                 <h3>友情链接</h3>
@@ -81,6 +79,33 @@
         </div>
         <div id="gotop"><a class="gotop"></a></div>
     </footer>
+
+    <!-- 发帖 -->
+    <div class="modal fade" id="myModal3">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- 模态框头部 -->
+                <div class="modal-header">
+                    <h4 class="modal-title">bbs</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <!-- 模态框主体 -->
+                <div class="modal-body" >
+                    <form role="form"  method="get">
+                        <div class="form-group">
+                            <label >题目</label>
+                            <input type="text" class="form-control" id="title" placeholder="请输入标题">
+                        </div>
+                        <div class="form-group">
+                            <label >内容</label>
+                            <input type="text" class="form-control" id="bbsContent" placeholder="请输入内容">
+                        </div>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="publish()">发布</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- 登录 -->
     <div class="modal fade" id="myModal">
@@ -108,6 +133,7 @@
             </div>
         </div>
     </div>
+
 
     <!-- 注册 -->
     <div class="modal fade" id="register">
@@ -180,8 +206,8 @@
                     '</div>\n' +
                     '<a class="left carousel-control" href="#lunbotu" role="button" data-slide="prev" rel="nofollow">\n' +
                     '<span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>\n' +
-                    '<span class="sr-only">上一个</span> </a> <a class="right carousel-control" href="#lunbotu" role="button" data-slide="next" rel="nofollow">\n' +
-                    '<span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span> <span class="sr-only">下一个</span> </a>'
+                    '<a class="right carousel-control" href="#lunbotu" role="button" data-slide="next" rel="nofollow">\n' +
+                    '<span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>  </a>'
         }
 
         //获取所有游戏列表
@@ -212,6 +238,27 @@
             }
             document.getElementById('content1').innerHTML =content
         }
+
+        //获取论坛评论列表
+        axios({
+            method:"get",
+            url:"http://localhost:8081/ytPost/list"
+        }).then(res=>{
+            const json = res.data.data
+            if(json==null)return;
+            var content = ''
+            for (let i in json) {
+                content += '<li style="height: 40px"><a onclick="toPostPage(' +  json[i].id + ')">' + json[i].title + '</a><font>' + timeFormat(json[i].cTime) +
+                    '</font><u></u><i>' + json[i].content + '</i></li>'
+            }
+            document.getElementById('replyList').innerHTML =content
+        })
+
+        function toPostPage(id){
+            const url = "./postPage.html?id="+id;
+            window.open(url)
+        }
+
 
         //获取所有游戏列表 按照时间排序，只拿前三条
         axios({
@@ -289,6 +336,34 @@
                 }
                 else {
                     alert("注册成功")
+                }
+            })
+        }
+
+        //发布
+        function publish() {
+            if(localStorage.getItem("user")==null){
+                console.log(2323)
+                alert("请登录")
+                return
+            }
+            const title = document.getElementById('title').value
+            const bbsContent = document.getElementById('bbsContent').value
+            axios({
+                method:"post",
+                url:"http://localhost:8081/ytPost/add",
+                data :{
+                    title : title,
+                    content : bbsContent,
+                    userId:localStorage.getItem("user")
+                }
+            }).then(res=>{
+                const json = res.data.data
+                if(json==null){
+                    alert("发布失败")
+                }
+                else {
+                    alert("发布成功")
                 }
             })
         }

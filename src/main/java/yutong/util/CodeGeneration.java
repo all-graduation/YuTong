@@ -57,7 +57,7 @@ public class CodeGeneration {
         StrategyConfig strategy = new StrategyConfig();
 //        strategy.setTablePrefix(new String[] { "sys_" });// 此处可以修改为您的表前缀
         strategy.setNaming(NamingStrategy.underline_to_camel);// 表名生成策略
-        strategy.setInclude(new String[] { "yt_user","yt_game","yt_order","yt_poster","yt_reply","yt_target" }); // 需要生成的表
+        strategy.setInclude(new String[] { "yt_user","yt_game","yt_order","yt_poster","yt_reply","yt_target","yt_post","yt_post_reply" }); // 需要生成的表
 
         strategy.setSuperServiceClass(null);
         strategy.setSuperServiceImplClass(null);

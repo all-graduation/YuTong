@@ -1,0 +1,296 @@
+﻿<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <title>game-shop</title>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="css/nprogress.css">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link rel="stylesheet" type="text/css" href="css/font-awesome.min.css">
+    <link rel="apple-touch-icon-precomposed" href="images/icon.png">
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="js/jquery-2.1.4.min.js"></script>
+    <script src="js/nprogress.js"></script>
+    <script src="js/jquery.lazyload.min.js"></script>
+    <!-- axios请求处理JS-->
+    <script src="js/axios.js"></script>
+</head>
+<body class="user-select">
+<header class="header" id="header">
+    <nav class="navbar navbar-default" id="navbar">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#header-navbar" aria-expanded="false"> <span class="sr-only"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button>
+                <h1 class="logo hvr-bounce-in"><a href="./index.html" title="游戏商城"><img src="./images/YTlogo.jpg" alt="游戏商城" style="width: 16%;height: 20%"></a></h1>
+            </div>
+            <div class="collapse navbar-collapse" id="header-navbar">
+                <ul id="info" class="nav navbar-nav navbar-right" style="position: relative;bottom: -20px">
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+<section class="container">
+    <div class="content-wrap">
+        <div><button style="position:relative ; left: 60%" type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal" onclick="buy()" >购买</button></div>
+        <div class="content">
+         <div id="content">
+         </div>
+            <h3>评论列表</h3>
+            <hr style="height:1px;border:none;border-top:1px solid rgba(85,85,85,0.24);" />
+            <div id="replyList">
+            </div>
+            <div id="respond" style="margin-top: 50px">
+                    <div class="comment">
+                        <div class="comment-box">
+                            <textarea placeholder="您的评论或留言（必填）" name="comment-textarea" id="comment-textarea" cols="100%" rows="3" tabindex="3"></textarea>
+                            <div class="comment-ctrl">
+                                <button onclick="submitReply()" name="comment-submit" id="comment-submit" tabindex="4">评论</button>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+        </div>
+    </div>
+    <aside class="sidebar">
+        <div class="widget widget_hot">
+            <h3>最新游戏</h3>
+            <ul id="ulList">
+            </ul>
+        </div>
+        <div class="widget widget_sentence">
+            <a  target="_blank" rel="nofollow" title="MZ-NetBlog主题">
+                <img style="width: 100%" src="images/YTLogo.jpg" alt="MZ-NetBlog主题">
+            </a>
+        </div>
+        <div class="widget widget_sentence">
+            <h3>友情链接</h3>
+            <div class="widget-sentence-content">
+                <a href="http://www.4399.com/" title="Harries BLOG" target="_blank" draggable="false">4399小游戏</a>&nbsp;&nbsp;&nbsp;
+            </div>
+            <div class="widget-sentence-content">
+                <a href="http://www.4399.com/" title="Harries BLOG" target="_blank" draggable="false">大连东软</a>&nbsp;&nbsp;&nbsp;
+            </div>
+        </div>
+    </aside>
+</section>
+<footer class="footer">
+    <div class="container">
+        <p>本站[<a href="">简简单单游戏</a>]的部分内容来源于网络，若侵犯到您的利益，请联系站长删除！谢谢！Powered By [<a href="" target="_blank" rel="nofollow">DTcms</a>] Version 4.0 &nbsp;<a href="" target="_blank" rel="nofollow">快快乐乐</a> &nbsp; <a href="" target="_blank" class="sitemap">网站地图</a></p>
+    </div>
+    <div id="gotop"><a class="gotop"></a></div>
+</footer>
+
+
+<script src="js/bootstrap.min.js"></script>
+<script src="js/jquery.ias.js"></script>
+<script src="js/scripts.js"></script>
+<!-- axios请求处理JS-->
+<script src="js/axios.js"></script>
+<script>
+
+
+    //获取所有游戏列表 按照时间排序，只拿前三条
+    axios({
+        method:"get",
+        url:"http://localhost:8081/game/listTime"
+    }).then(res=>getGameListByTime(res))
+    function getGameListByTime(res) {
+        const json = res.data.data
+        var content = ''
+        for (let i in json) {
+            content +=
+                '                  <li>\n' +
+                '                       <a onclick="toGamePage(' + json[i].gameId + ')" title= ' +json[i].gameName+ '>\n' +
+                '                            <span class="thumbnail">\n' +
+                '                                <img class="thumb" data-original= ' + json[i].gameUrl + ' src=' + json[i].gameUrl + '>\n' +
+                '                            </span><span class="text">' + json[i].gameName + '<br>' +
+                '                                <i class="glyphicon glyphicon-time"></i>\n' +timeFormat(json[i].createTime)+
+                '                            </span>\n' +
+                '                        </a>\n' +
+                '                    </li>'
+        }
+        document.getElementById('ulList').innerHTML =content
+    }
+
+    //进入页面的时候获取自己的用户信息，从localstory里取id
+    axios({
+        method:"post",
+        url:"http://localhost:8081/user/userInfo",
+        data :{
+            userId : localStorage.getItem("user")
+        }
+    }).then(res=>getUser(res))
+    function getUser(res) {
+        const json = res.data.data
+        document.getElementById("info").innerHTML = '<a style="font-size: 20px" onclick="userInfo()">' +json.userName
+        '</a>'
+    }
+
+    //初始化游戏数据
+    initData();
+    function initData() {
+        //获取游戏id，游戏id是点击后传过来的http://localhost:63342/game-shop/src/webPage/show.html?id=2111 例如id=2111取出id部分
+        const ts_indexof = window.location.href.lastIndexOf("=");
+        const gameId = window.location.href.substring(ts_indexof+1,window.location.href.length);
+        document.getElementById("header").value = gameId
+        //通过游戏id获取游戏数据
+        axios({
+            method:"get",
+            url:"http://localhost:8081/game/game?id="+gameId
+        }).then(res=>{
+            const json = res.data.data
+            console.log(json)
+            document.getElementById("content").innerHTML = '' +
+                '             <header style="text-align: center; font-size: 25px">' +json.gameName + '</header>\n' +
+                '             <div style="margin-bottom: 200px">\n' +
+                '                 <img style="width: 600px;margin-top: 30px" src=' + json.gameUrl + ' >\n' +
+                '                 <p>' + json.content + '</p>\n' +
+                '                 <p>价格：' + json.money + '</p>\n' +
+                '                 <p>购买数量：' + json.butCount + '</p>\n' +
+                '                 <time>' + timeFormat(json.createTime) + '</time>\n' +
+                '             </div>'
+        })
+
+        //渲染评论列表
+        axios({
+            method:"get",
+            url:"http://localhost:8081/reply/list?id="+gameId,
+            data :{
+                userId : localStorage.getItem("user")
+            }
+        }).then(res=>{
+            const json = res.data.data
+            var node = '';
+            for (var i in json) {
+                if(json[i].replyTo!=null){
+                    node += '                ' +
+                        ' <div>\n' +
+                        ' <span class="label label-info">' +json[i].target + '</span>' +
+                        ' <p style="margin-bottom: 5px">用户：' + json[i].user + '&nbsp&nbsp&nbsp&nbsp回复用户: ' + json[i].replyTo +'</p>\n' +
+                        ' <p>内容: ' + json[i].content + '</p>\n' +
+                        ' <br/>\n' +
+                        ' <time style="font-size: 10px;position:relative;right: -75%">时间：' + timeFormat(json[i].createTime) + ' </time>\n' +
+                        ' <a onclick="showReply(' + json[i].id + ')" style="position:relative;right: -76%">回复</a>' +
+                        ' <hr style="height:1px;border:none;border-top:1px solid rgba(85,85,85,0.24);" />\n' +
+                        ' </div>'
+                }else {
+                    node += '                ' +
+                        ' <div>\n' +
+                        ' <span class="label label-info">' +json[i].target + '</span>' +
+                        ' <p style="margin-bottom: 5px">用户：' + json[i].user  +
+                        ' <p>内容: ' + json[i].content + '</p>\n' +
+                        ' <br/>\n' +
+                        ' <time style="font-size: 10px;position:relative;right: -75%">时间：' + timeFormat(json[i].createTime) + ' </time>\n' +
+                        ' <a onclick="showReply(' + json[i].id + ')" style="position:relative;right: -76%">回复</a>' +
+                        ' <hr style="height:1px;border:none;border-top:1px solid rgba(85,85,85,0.24);" />\n' +
+                        ' </div>'
+                }
+            }
+            document.getElementById("replyList").innerHTML = node
+        })
+    }
+
+    //跳转到game详情页
+    function toGamePage(id) {
+        document.location = "./show.html?id=" + id;
+    }
+
+    //显示评论框
+    function showReply(id) {
+
+        if(document.getElementById("respond").style.display === 'none'){
+            document.getElementById("respond").style.display = 'block'
+            document.getElementById("respond").value = id
+        }else {
+            document.getElementById("respond").style.display = 'none'
+            document.getElementById("respond").value = null
+        }
+    }
+
+    //提交评论
+    function submitReply() {
+        const id = document.getElementById("respond").value
+        const gameId = document.getElementById("header").value
+        const content = document.getElementById("comment-textarea").value
+        //进入页面的时候获取自己的用户信息，从localstory里取id
+        axios({
+            method:"post",
+            url:"http://localhost:8081/reply/add",
+            data :{
+                userId : localStorage.getItem("user"),
+                gameId : gameId,
+                replyToReplyId : id ,
+                content : content
+            }
+        }).then(res=>{
+                if(res.data.data!=null){
+                    location.reload()
+                }
+        })
+
+    }
+
+    //购买游戏
+    function buy() {
+        const gameId = document.getElementById("header").value
+        axios({
+            method:"post",
+            url:"http://localhost:8081/order/order",
+            data :{
+                userId : localStorage.getItem("user"),
+                gameId : gameId
+            }
+        }).then(res=>{
+            if(res.data.data==null){
+                alert("已经购买请勿重新购买")
+            }
+        })
+
+    }
+
+
+
+
+
+    /**
+     * 将"2018-05-19T08:04:52.000+0000"这种格式的时间转化为正常格式，因为java后台穿的时间戳是2018-05-19T08:04:52.000+0000这种格式
+     * @param time
+     */
+    function timeFormat(time) {
+        var d = new Date(time);
+
+        var year = d.getFullYear();       //年
+        var month = d.getMonth() + 1;     //月
+        var day = d.getDate();            //日
+
+        var hh = d.getHours();            //时
+        var mm = d.getMinutes();          //分
+        var ss = d.getSeconds();           //秒
+
+        var clock = year + "/";
+
+        if (month < 10)
+            clock += "0";
+
+        clock += month + "/";
+
+        if (day < 10)
+            clock += "0";
+
+        clock += day + " ";
+
+        if (hh < 10)
+            clock += "0";
+
+        clock += hh + ":";
+        if (mm < 10) clock += '0';
+        clock += mm + ":";
+
+        if (ss < 10) clock += '0';
+        clock += ss;
+        return (clock);
+    }
+</script>
+</body>
+</html>
